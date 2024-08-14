@@ -1,0 +1,73 @@
+name: tests
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  Alpine:
+    runs-on: ubuntu-latest
+    container: python:3.10-alpine
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Restore system dependencies
+        id: system-deps-cache
+        uses: actions/cache@v3
+        with:
+          path: |
+            hack/workflows/alpine/dependencies.txt
+          key: ${{ runner.os }}-system-deps-${{ hashFiles('hack/workflows/alpine/dependencies.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-system-deps-
+
+      - name: Install system dependencies
+        if: steps.system-deps-cache.outputs.cache-hit != 'true'
+        run: |
+          DEPS=$(cat hack/workflows/alpine/dependencies.txt | tr '\n' ' ')
+          apk add --no-cache $DEPS
+
+      - name: Restore virtual environment
+        id: venv-cache
+        uses: actions/cache@v3
+        with:
+          path: |
+            .venv/
+          key: ${{ runner.os }}-venv-${{ hashFiles('pyproject.toml') }}
+          restore-keys: |
+            ${{ runner.os }}-venv-
+
+      - name: Setup virtual environment
+        if: steps.venv-cache.outputs.cache-hit != 'true'
+        run: |
+          python -m venv .venv
+          . .venv/bin/activate
+          pip install --upgrade pip
+
+      - name: Install dependencies
+        if: steps.venv-cache.outputs.cache-hit != 'true'
+        run: |
+          . .venv/bin/activate
+          pip install .[dev]
+
+      - name: Lint
+        env:
+          CI: true
+        run: |
+          . .venv/bin/activate
+          make lint
+
+      - name: Test
+        env:
+          CI: true
+        run: |
+          . .venv/bin/activate
+          make test

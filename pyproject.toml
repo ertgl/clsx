@@ -1,0 +1,55 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "clsx"
+description = "Easily define conditional class attributes for HTML elements."
+authors = [{ name = "Ertuğrul Keremoğlu", email = "ertugkeremoglu@gmail.com" }]
+license = "MIT"
+dependencies = []
+dynamic = ["version"]
+readme = "README.md"
+requires-python = ">= 3.10"
+
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Environment :: Console",
+    "Environment :: Web Environment",
+    "Intended Audience :: Developers",
+    "License :: Freeware",
+    "License :: OSI Approved",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Topic :: Internet",
+    "Topic :: Internet :: WWW/HTTP",
+    "Topic :: Internet :: WWW/HTTP :: Browsers",
+    "Topic :: Internet :: WWW/HTTP :: Dynamic Content",
+    "Topic :: Software Development",
+    "Topic :: Software Development :: Code Generators",
+    "Topic :: Software Development :: Interpreters",
+    "Topic :: Software Development :: Libraries",
+    "Topic :: Software Development :: Pre-processors",
+    "Topic :: Software Development :: User Interfaces",
+    "Topic :: Text Processing",
+    "Topic :: Text Processing :: Markup :: HTML",
+    "Topic :: Utilities",
+    "Typing :: Typed",
+]
+
+[project.urls]
+Homepage = "https://github.com/ertgl/clsx"
+Issues = "https://github.com/ertgl/clsx/issues"
+
+[project.optional-dependencies]
+dev = ["clsx[mypy]", "clsx[ruff]"]
+mypy = ["mypy"]
+ruff = ["ruff"]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/clsx"]
+
+[tool.hatch.version]
+path = "src/clsx/__version__.py"
